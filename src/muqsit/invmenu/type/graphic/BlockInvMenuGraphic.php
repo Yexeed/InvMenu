@@ -33,7 +33,7 @@ final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 
 		$network->sendDataPacket(UpdateBlockPacket::create(
 			BlockPosition::fromVector3($this->position),
-            RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($this->block->getStateId()),
+			RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($this->block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		));
@@ -50,7 +50,7 @@ final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 		$block = $world->getBlockAt($this->position->x, $this->position->y, $this->position->z);
 		$network->sendDataPacket(UpdateBlockPacket::create(
 			$blockPosition,
-            RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($block->getStateId()),
+			RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		), true);
