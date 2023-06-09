@@ -9,7 +9,7 @@ use pocketmine\block\Block;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -18,10 +18,10 @@ use pocketmine\player\Player;
 final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 
 	public function __construct(
-		private Block $block,
-		private Vector3 $position,
-		private ?InvMenuGraphicNetworkTranslator $network_translator = null,
-		private int $animation_duration = 0
+		readonly private Block $block,
+		readonly private Vector3 $position,
+		readonly private ?InvMenuGraphicNetworkTranslator $network_translator = null,
+		readonly private int $animation_duration = 0
 	){}
 
 	public function getPosition() : Vector3{
@@ -33,7 +33,7 @@ final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 
 		$network->sendDataPacket(UpdateBlockPacket::create(
 			BlockPosition::fromVector3($this->position),
-			RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($this->block->getStateId()),
+            TypeConverter::getInstance($network->getProtocolId())->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		));
@@ -50,7 +50,7 @@ final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 		$block = $world->getBlockAt($this->position->x, $this->position->y, $this->position->z);
 		$network->sendDataPacket(UpdateBlockPacket::create(
 			$blockPosition,
-			RuntimeBlockMapping::getInstance($network->getProtocolId())->toRuntimeId($block->getStateId()),
+            TypeConverter::getInstance($network->getProtocolId())->getBlockTranslator()->internalIdToNetworkId($block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		), true);

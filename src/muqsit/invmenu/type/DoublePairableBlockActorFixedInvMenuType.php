@@ -7,23 +7,26 @@ namespace muqsit\invmenu\type;
 use muqsit\invmenu\inventory\InvMenuInventory;
 use muqsit\invmenu\InvMenu;
 use muqsit\invmenu\type\graphic\BlockActorInvMenuGraphic;
+use muqsit\invmenu\type\graphic\BlockInvMenuGraphic;
 use muqsit\invmenu\type\graphic\InvMenuGraphic;
 use muqsit\invmenu\type\graphic\MultiBlockInvMenuGraphic;
 use muqsit\invmenu\type\graphic\network\InvMenuGraphicNetworkTranslator;
 use muqsit\invmenu\type\util\InvMenuTypeHelper;
 use pocketmine\block\Block;
 use pocketmine\block\tile\Chest;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\inventory\Inventory;
+use pocketmine\math\Facing;
 use pocketmine\player\Player;
 
 final class DoublePairableBlockActorFixedInvMenuType implements FixedInvMenuType{
 
 	public function __construct(
-		private Block $block,
-		private int $size,
-		private string $tile_id,
-		private ?InvMenuGraphicNetworkTranslator $network_translator = null,
-		private int $animation_duration = 0
+		readonly private Block $block,
+		readonly private int $size,
+		readonly private string $tile_id,
+		readonly private ?InvMenuGraphicNetworkTranslator $network_translator = null,
+		readonly private int $animation_duration = 0
 	){}
 
 	public function getSize() : int{
@@ -31,17 +34,19 @@ final class DoublePairableBlockActorFixedInvMenuType implements FixedInvMenuType
 	}
 
 	public function createGraphic(InvMenu $menu, Player $player) : ?InvMenuGraphic{
-		$origin = $player->getPosition()->addVector(InvMenuTypeHelper::getPositionOffset())->floor();
+		$position = $player->getPosition();
+		$origin = $position->addVector(InvMenuTypeHelper::getPositionOffset())->floor();
 		if(!InvMenuTypeHelper::isValidYCoordinate($origin->y)){
 			return null;
 		}
 
 		$graphics = [];
 		$menu_name = $menu->getName();
+		$world = $position->getWorld();
 		foreach([
-			[$origin, $origin->east()],
-			[$origin->east(), $origin]
-		] as [$origin_pos, $pair_pos]){
+			[$origin, $origin->east(), [Facing::NORTH, Facing::SOUTH, Facing::WEST]],
+			[$origin->east(), $origin, [Facing::NORTH, Facing::SOUTH, Facing::EAST]]
+		] as [$origin_pos, $pair_pos, $connected_sides]){
 			$graphics[] = new BlockActorInvMenuGraphic(
 				$this->block,
 				$origin_pos,
@@ -51,6 +56,9 @@ final class DoublePairableBlockActorFixedInvMenuType implements FixedInvMenuType
 				$this->network_translator,
 				$this->animation_duration
 			);
+			foreach(InvMenuTypeHelper::findConnectedBlocks("Chest", $world, $origin_pos, $connected_sides) as $side){
+				$graphics[] = new BlockInvMenuGraphic(VanillaBlocks::BARRIER(), $side);
+			}
 		}
 
 		return count($graphics) > 1 ? new MultiBlockInvMenuGraphic($graphics) : $graphics[0];
