@@ -1,6 +1,6 @@
 {
 	"name": "nethergamesmc/invmenu",
-	"description": "InvMenu is a PocketMine-MP virion that eases creating and managing fake inventories",
+	"description": "A PocketMine-MP virion to create and manage virtual inventories!",
 	"license": "proprietary",
 	"type": "project",
 	"require": {
