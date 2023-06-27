@@ -48,17 +48,16 @@ final class BlockInvMenuGraphic implements PositionedInvMenuGraphic{
 		$world = $player->getWorld();
 		$blockPosition = BlockPosition::fromVector3($this->position);
 		$block = $world->getBlockAt($this->position->x, $this->position->y, $this->position->z);
-        $protocolId = $network->getProtocolId();
 		$network->sendDataPacket(UpdateBlockPacket::create(
 			$blockPosition,
-            TypeConverter::getInstance($protocolId)->getBlockTranslator()->internalIdToNetworkId($block->getStateId()),
+            $network->getTypeConverter()->getBlockTranslator()->internalIdToNetworkId($block->getStateId()),
 			UpdateBlockPacket::FLAG_NETWORK,
 			UpdateBlockPacket::DATA_LAYER_NORMAL
 		), true);
 
 		$tile = $world->getTileAt($this->position->x, $this->position->y, $this->position->z);
 		if($tile instanceof Spawnable){
-			$network->sendDataPacket(BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound($protocolId)), true);
+			$network->sendDataPacket(BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound($network->getTypeConverter())), true);
 		}
 	}
 
