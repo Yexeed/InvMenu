@@ -15,6 +15,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use SplQueue;
@@ -172,7 +173,7 @@ final class PlayerNetwork{
 	}
 
 	public function notify(int $timestamp) : void{
-		if($this->current !== null && $timestamp === $this->current->timestamp){
+		if($this->current !== null && $timestamp === $this->current->timestamp * ($this->network_session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_20_10 ? 1000000 : 1)){
 			$this->processCurrent(true);
 		}
 	}
