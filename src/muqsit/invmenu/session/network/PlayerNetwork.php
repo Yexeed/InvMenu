@@ -104,7 +104,7 @@ final class PlayerNetwork{
 	 * @param Closure(bool) : bool $then
 	 */
 	public function wait(int $type, Closure $then) : void{
-		$entry = $this->handler->createNetworkStackLatencyEntry($then);
+		$entry = $this->handler->createNetworkStackLatencyEntry($then, $this->network_session->getProtocolId());
 		if($this->current !== null){
 			$this->queue->enqueue($entry);
 			$this->entry_types[spl_object_id($entry)] = $type;
@@ -173,7 +173,7 @@ final class PlayerNetwork{
 	}
 
 	public function notify(int $timestamp) : void{
-		if($this->current !== null && $timestamp === $this->current->timestamp * ($this->network_session->getProtocolId() >= ProtocolInfo::PROTOCOL_1_20_10 ? 1000000 : 1)){
+		if($this->current !== null && $timestamp === $this->current->timestamp){
 			$this->processCurrent(true);
 		}
 	}
