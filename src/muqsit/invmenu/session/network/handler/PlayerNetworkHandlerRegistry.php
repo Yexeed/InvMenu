@@ -20,7 +20,7 @@ final class PlayerNetworkHandlerRegistry{
 	public function __construct(){
 		$this->registerDefault(new ClosurePlayerNetworkHandler(static function(Closure $then, int $protocolId) : NetworkStackLatencyEntry{
 			$timestamp = mt_rand();
-			return new NetworkStackLatencyEntry($timestamp * ($protocolId >= ProtocolInfo::PROTOCOL_1_20_10 ? 1000000 : 1000), $then, $timestamp);
+			return new NetworkStackLatencyEntry($timestamp * ($protocolId >= ProtocolInfo::PROTOCOL_1_20_10 ? 1000000 : 1000), $then, $timestamp * ($protocolId >= ProtocolInfo::PROTOCOL_1_20_10 ? 1 : 1000));
 		}));
 		$this->register(DeviceOS::PLAYSTATION, new ClosurePlayerNetworkHandler(static function(Closure $then, int $protocolId) : NetworkStackLatencyEntry{
 			$timestamp = mt_rand();
