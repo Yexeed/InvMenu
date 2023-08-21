@@ -84,6 +84,13 @@ class InvMenu implements InvMenuTypeIds{
 	}
 
 	/**
+	 * @return (Closure(InvMenuTransaction) : InvMenuTransactionResult)|null
+	 */
+	public function getListener() : ?Closure{
+		return $this->listener;
+	}
+
+	/**
 	 * @param (Closure(InvMenuTransaction) : InvMenuTransactionResult)|null $listener
 	 * @return self
 	 */
@@ -93,12 +100,34 @@ class InvMenu implements InvMenuTypeIds{
 	}
 
 	/**
+	 * @return (Closure(Player, Inventory) : void)|null
+	 */
+	public function getInventoryCloseListener() : ?Closure{
+		return $this->inventory_close_listener;
+	}
+
+	/**
 	 * @param (Closure(Player, Inventory) : void)|null $listener
 	 * @return self
 	 */
 	public function setInventoryCloseListener(?Closure $listener) : self{
 		$this->inventory_close_listener = $listener;
 		return $this;
+	}
+
+	public function getInventory() : Inventory{
+		return $this->inventory;
+	}
+
+	public function setInventory(?Inventory $custom_inventory) : void{
+		if($this->synchronizer !== null){
+			$this->synchronizer->destroy();
+			$this->synchronizer = null;
+		}
+
+		if($custom_inventory !== null){
+			$this->synchronizer = new SharedInvMenuSynchronizer($this, $custom_inventory);
+		}
 	}
 
 	/**
@@ -144,21 +173,6 @@ class InvMenu implements InvMenuTypeIds{
 			}
 			return false;
 		});
-	}
-
-	public function getInventory() : Inventory{
-		return $this->inventory;
-	}
-
-	public function setInventory(?Inventory $custom_inventory) : void{
-		if($this->synchronizer !== null){
-			$this->synchronizer->destroy();
-			$this->synchronizer = null;
-		}
-
-		if($custom_inventory !== null){
-			$this->synchronizer = new SharedInvMenuSynchronizer($this, $custom_inventory);
-		}
 	}
 
 	/**
