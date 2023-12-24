@@ -7,7 +7,7 @@ namespace muqsit\invmenu\inventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\world\Position;
-
+//
 final class InvMenuInventory extends SimpleInventory implements BlockInventory{
 
 	private Position $holder;
